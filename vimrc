@@ -84,8 +84,6 @@ set statusline=\ %<%F[%1*%M%*%n%R%H]%=\ %y\ %0(%{&fileformat}\ %{&encoding}\ %c:
 
 " >> move 4 blackspace
 set shiftwidth=4
-" hightlight the current line
-set cursorline
 " remove 4 whitespace for <backspace>
 set softtabstop=4
 " tab length is set to 4
@@ -196,7 +194,7 @@ Bundle 'vis'
 Bundle 'ftplugin-for-Calendar'
 Bundle 'VisIncr'
 Bundle 'taglist.vim'
-
+Bundle 'akiradeveloper/project.vim'
 Bundle 'auto_mkdir'
 Bundle 'gorodinskiy/vim-coloresque'
 Bundle "fcitx.vim"
@@ -218,7 +216,7 @@ Bundle 'vim-misc'
 Bundle 'Valloric/ListToggle'
 Bundle 'kshenoy/vim-signature'
 Bundle 'airblade/vim-gitgutter'
-
+Bundle 'tyru/restart.vim'
 
 
 Bundle 'Valloric/YouCompleteMe'
@@ -254,12 +252,47 @@ Bundle 'CSS-2.1-Specification'
 Bundle 'mattn/emmet-vim'
 Bundle 'othree/xml.vim'
 
+"for create own cache
+function! CreateOwnProject()
+    call mkdir('.vimproj')
+    call writefile([], '.vimproj/tags')
+    :UpdateCscope<cr>
+    :Restart<cr>
+endfunction
+command! -nargs=0 CP call CreateOwnProject()
+
+"for remove own cache
+function! RemoveOwnProject()
+    :!rm -rf ./vimproj
+    :Restart<cr>
+endfunction
+command! -nargs=0 RP call RemoveOwnProject())
+
+
+
+"for project
+nmap <silent> <Leader>p <Plug>ToggleProject
+"set the default window width
+let g:proj_window_width=30
+"set the incr width when <space> is press
+let g:proj_window_increment=90
+let g:proj_flags='i'
+let g:proj_flags='m'
+let g:proj_flags='s'
+let g:proj_flags='t'
+let g:proj_flags='c'
+let g:proj_flags='L'
+let g:proj_flags='S'
+let g:proj_flags='T'
+let g:proj_flags='v'
+
 "git-gutter
 let g:gitgutter_map_keys = 0
 let g:gitgutter_eager = 0
 
 " tabbar
 nmap <leader>tb :TagbarToggle<cr>
+set tags=./.tags,./.vimproj/tags,~/.tags
 let g:tagbar_width=30
 
 "easy-tags
@@ -321,7 +354,12 @@ map <leader>tf :call CscopeFind('f', expand('<cword>'))<CR>
 " i: Find files #including this file
 map <leader>ti :call CscopeFind('i', expand('<cword>'))<CR>
 map <leader>tl :call ToggleLocationList()<CR>
-map <leader>tu :CscopeGen .<CR>
+function! UpdateCscope()
+    :CscopeGen .<cr>
+    call delete('./cscope.in.out')
+    call delete('./cscope.po.out')
+endfunction
+command! -nargs=0 UpdateCscope call UpdateCscope()
 
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -569,6 +607,7 @@ let g:pymode_options_max_line_length = 119
 let g:pymode_breakpoint_bind = '<leader>xb'
 let g:pymode_rope_completion = 0
 let g:pymode_lint_ignore = "E501"
+let g:pymode_rope_ropefolder='/.vimproj/.ropeproject'
 
 
 
